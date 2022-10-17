@@ -1,6 +1,7 @@
 package cl.ravenhill.poca
 
 import io.kotest.core.spec.style.WordSpec
+import io.kotest.datatest.withData
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
@@ -13,53 +14,70 @@ private const val CHARIZARD_HP = 120
 private const val MEW_NAME = "Mew"
 private const val MEW_TYPE = "Psychic"
 private const val MEW_HP = 60
+private const val PIKACHU_NAME = "Pikachu"
+private const val PIKACHU_TYPE = "Electric"
+private const val PIKACHU_HP = 60
+
+data class CardData(
+    val name: String,
+    val type: String,
+    val maxHp: Int
+)
 
 class CardSpec : WordSpec({
-  lateinit var charizard: Card
-  lateinit var mew: Card
+    lateinit var charizard: Card
+    lateinit var mew: Card
 
-  beforeEach {
-    charizard = Card(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP)
-    mew = Card(MEW_NAME, MEW_TYPE, MEW_HP)
-  }
-
-  "Two cards with the same parameters" should {
-    "Be equal" {
-      val charizard2 =
-        Card(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP)
-      charizard shouldBe charizard2
-      val mew2 = Card(MEW_NAME, MEW_TYPE, MEW_HP)
-      mew shouldBe mew2
+    beforeEach {
+        charizard = Card(
+            CHARIZARD_NAME,
+            CHARIZARD_TYPE,
+            CHARIZARD_HP
+        )
+        mew = Card(MEW_NAME, MEW_TYPE, MEW_HP)
     }
 
-    "Have the same hash code" {
-      val charizard2 =
-        Card(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP)
-      charizard should haveSameHashCodeAs(
-        charizard2
-      )
-      val mew2 = Card(MEW_NAME, MEW_TYPE, MEW_HP)
-      mew should haveSameHashCodeAs(mew2)
-    }
-  }
-
-  "Two Pokémon with different parameters" should {
-    "Not be equal" {
-      val charizard2 =
-        Card(CHARIZARD_NAME, CHARIZARD_TYPE, 100)
-      charizard shouldNotBe charizard2
-      val mew2 = Card(MEW_NAME, MEW_TYPE, 100)
-      mew shouldNotBe mew2
+    "Two cards with the same parameters should be equal" When {
+        withData(
+            CardData(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
+            CardData(MEW_NAME, MEW_TYPE, MEW_HP),
+            CardData(PIKACHU_NAME, PIKACHU_TYPE, PIKACHU_HP)
+        ) { (name, type, hp) ->
+            Card(name, type, hp) shouldBe Card(name, type, hp)
+        }
     }
 
-    "Not have the same hash code" {
-      val charizard2 =
-        Card(CHARIZARD_NAME, CHARIZARD_TYPE, 100)
-      charizard shouldNot haveSameHashCodeAs(
-        charizard2
-      )
-      val mew2 = Card(MEW_NAME, MEW_TYPE, 100)
-      mew shouldNot haveSameHashCodeAs(mew2)
+    "Two cards with the same parameters should have the same hash code" When {
+        withData(
+            CardData(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
+            CardData(MEW_NAME, MEW_TYPE, MEW_HP),
+            CardData(PIKACHU_NAME, PIKACHU_TYPE, PIKACHU_HP)
+        ) { (name, type, hp) ->
+            Card(name, type, hp) should haveSameHashCodeAs(Card(name, type, hp))
+        }
     }
-  }
+
+    "Two cards with different parameters should not be equal" When {
+        withData(
+            CardData(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
+            CardData(MEW_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
+            CardData(CHARIZARD_NAME, PIKACHU_TYPE, CHARIZARD_HP)
+        ) { (name, type, hp) ->
+            Card(name, type, hp) shouldNotBe Card(name, type, hp + 1)
+            Card(name, type, hp) shouldNotBe Card(name, "Other type", hp)
+            Card(name, type, hp) shouldNotBe Card("Other name", type, hp)
+        }
+    }
+
+    "Two cards with different parameters should not have the same hash codes" When {
+        withData(
+            CardData(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
+            CardData(MEW_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
+            CardData(CHARIZARD_NAME, PIKACHU_TYPE, CHARIZARD_HP)
+        ) { (name, type, hp) ->
+            Card(name, type, hp) shouldNot haveSameHashCodeAs(Card(name, type, hp + 1))
+            Card(name, type, hp) shouldNot haveSameHashCodeAs(Card(name, "Other type", hp))
+            Card(name, type, hp) shouldNot haveSameHashCodeAs(Card("Other name", type, hp))
+        }
+    }
 })
