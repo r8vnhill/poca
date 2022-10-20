@@ -3,21 +3,24 @@ package cl.ravenhill.poca
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.haveSameHashCodeAs
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.string
+import io.kotest.property.assume
 import io.kotest.property.checkAll
 
-data class CardData(
+private data class CardData(
     val name: String,
     val type: String,
     val maxHp: Int,
     val attack: Int
 )
 
-fun cardArb(minHp: Int = 1, maxHp: Int = 100, minAtk: Int = 1, maxAtk: Int = 100) =
+private fun cardArb(minHp: Int = 1, maxHp: Int = 100, minAtk: Int = 1, maxAtk: Int = 100) =
     arbitrary {
         val name = Arb.string().bind()
         val type = Arb.string().bind()
@@ -49,6 +52,76 @@ class CardSpec : WordSpec({
         }
     }
 
+    "Two cards with different names" should {
+        "not be equal" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNotBe c2
+            }
+        }
+
+        "not have the same hash code" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNot haveSameHashCodeAs(c2)
+            }
+        }
+    }
+
+    "Two cards with different types" should {
+        "not be equal" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                assume(card1.type != card2.type)
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNotBe c2
+            }
+        }
+
+        "not have the same hash code" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                assume(card1.type != card2.type)
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNot haveSameHashCodeAs(c2)
+            }
+        }
+    }
+
+    "Two cards with different maxHp" should {
+        "not be equal" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                assume(card1.maxHp != card2.maxHp)
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNotBe c2
+            }
+        }
+
+        "not have the same hash code" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                assume(card1.maxHp != card2.maxHp)
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNot haveSameHashCodeAs(c2)
+            }
+        }
+    }
+
+    "Two cards with different attack" should {
+        "not be equal" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                assume(card1.attack != card2.attack)
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNotBe c2
+            }
+        }
+
+        "not have the same hash code" {
+            checkAll(cardArb(), cardArb()) { card1, card2 ->
+                assume(card1.attack != card2.attack)
+                val (c1, c2) = cardPair(card1, card2)
+                c1 shouldNot haveSameHashCodeAs(c2)
+            }
+        }
+    }
+
     "An attack" should {
         "deal damage to the target" {
             checkAll(
@@ -61,6 +134,7 @@ class CardSpec : WordSpec({
 
             }
         }
+
         "be able to ko the target" {
             checkAll(
                 cardArb(maxHp = 50),
@@ -73,5 +147,4 @@ class CardSpec : WordSpec({
             }
         }
     }
-
 })
