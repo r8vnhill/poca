@@ -33,6 +33,9 @@ private fun cardPair(card1: CardData, card2: CardData) =
     Card(card1.name, card1.type, card1.maxHp, card1.attack) to
             Card(card2.name, card2.type, card2.maxHp, card2.attack)
 
+/**
+ * Tests for [Card].
+ */
 class CardSpec : WordSpec({
     "Two cards with the same parameters" should {
         "be equal" {
