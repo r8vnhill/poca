@@ -13,6 +13,14 @@ import io.kotest.property.arbitrary.string
 import io.kotest.property.assume
 import io.kotest.property.checkAll
 
+/**
+ * Auxiliary class to generate cards
+ *
+ * @property name   The name of the card.
+ * @property type   The type of the card.
+ * @property maxHp  The maximum amount of health points the card can have.
+ * @property attack The amount of damage the card can deal.
+ */
 private data class CardData(
     val name: String,
     val type: String,
@@ -20,6 +28,16 @@ private data class CardData(
     val attack: Int
 )
 
+/**
+ * [Arb]itrary card generator.
+ *
+ * @param minHp     The minimum amount of health points the card can have.
+ * @param maxHp     The maximum amount of health points the card can have.
+ * @param minAtk    The minimum amount of damage the card can deal.
+ * @param maxAtk    The maximum amount of damage the card can deal.
+ *
+ * @return An [arbitrary] card generator.
+ */
 private fun cardArb(minHp: Int = 1, maxHp: Int = 100, minAtk: Int = 1, maxAtk: Int = 100) =
     arbitrary {
         val name = Arb.string().bind()
@@ -29,6 +47,9 @@ private fun cardArb(minHp: Int = 1, maxHp: Int = 100, minAtk: Int = 1, maxAtk: I
         CardData(name, type, hp, attack)
     }
 
+/**
+ * Creates a card pair.
+ */
 private fun cardPair(card1: CardData, card2: CardData) =
     Card(card1.name, card1.type, card1.maxHp, card1.attack) to
             Card(card2.name, card2.type, card2.maxHp, card2.attack)
