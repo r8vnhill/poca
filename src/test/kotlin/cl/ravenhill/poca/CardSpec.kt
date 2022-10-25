@@ -28,17 +28,6 @@ data class CardData(
  * Tests for [Card].
  */
 class CardSpec : WordSpec({
-    lateinit var charizard: Card
-    lateinit var mew: Card
-
-    beforeEach {
-        charizard = Card(
-            CHARIZARD_NAME,
-            CHARIZARD_TYPE,
-            CHARIZARD_HP
-        )
-        mew = Card(MEW_NAME, MEW_TYPE, MEW_HP)
-    }
 
     "Two cards with the same parameters should be equal" When {
         withData(
@@ -48,9 +37,9 @@ class CardSpec : WordSpec({
         ) { (name, type, hp) ->
             Card(name, type, hp) shouldBe Card(name, type, hp)
         }
-        }
+    }
 
-        "Two cards with the same parameters should have the same hash code" When {
+    "Two cards with the same parameters should have the same hash code" When {
         withData(
             CardData(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
             CardData(MEW_NAME, MEW_TYPE, MEW_HP),
@@ -70,9 +59,9 @@ class CardSpec : WordSpec({
             Card(name, type, hp) shouldNotBe Card(name, "Other type", hp)
             Card(name, type, hp) shouldNotBe Card("Other name", type, hp)
         }
-        }
+    }
 
-        "Two cards with different parameters should not have the same hash codes" When {
+    "Two cards with different parameters should not have the same hash codes" When {
         withData(
             CardData(CHARIZARD_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
             CardData(MEW_NAME, CHARIZARD_TYPE, CHARIZARD_HP),
